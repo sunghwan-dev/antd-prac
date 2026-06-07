@@ -1,66 +1,84 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
 
-export default function Home() {
+import React, { useEffect, useState } from 'react';
+import { Card, Row, Col, Statistic, Spin, Typography } from 'antd';
+import { DollarOutlined, UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import SalesChart from '@/components/SalesChart';
+import { SalesData } from '@/lib/mockGenerator';
+
+const { Title } = Typography;
+
+export default function DashboardPage() {
+  const [data, setData] = useState<SalesData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/sales')
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+        <Spin size="large" description="데이터를 불러오는 중..." />
+      </div>
+    );
+  }
+
+  const totalSales = data.reduce((acc, curr) => acc + curr.sales, 0);
+  const totalVisitors = data.reduce((acc, curr) => acc + curr.visitors, 0);
+  const totalConversions = data.reduce((acc, curr) => acc + curr.conversions, 0);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div>
+      <Title level={3} style={{ marginBottom: 24 }}>비즈니스 현황 요약</Title>
+      
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={8}>
+          <Card variant="borderless" hoverable>
+            <Statistic
+              title="누적 매출 (연간)"
+              value={totalSales}
+              precision={0}
+              styles={{ content: { color: '#3f8600' } }}
+              prefix={<DollarOutlined />}
+              suffix="원"
             />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card variant="borderless" hoverable>
+            <Statistic
+              title="누적 방문자"
+              value={totalVisitors}
+              precision={0}
+              styles={{ content: { color: '#1890ff' } }}
+              prefix={<UserOutlined />}
+              suffix="명"
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card variant="borderless" hoverable>
+            <Statistic
+              title="누적 전환수"
+              value={totalConversions}
+              precision={0}
+              styles={{ content: { color: '#faad14' } }}
+              prefix={<ShoppingCartOutlined />}
+              suffix="건"
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Card title="월별 매출 및 트래픽 분석" style={{ marginTop: 24 }}>
+        <SalesChart data={data} />
+      </Card>
     </div>
   );
 }
