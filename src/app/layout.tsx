@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider } from "antd";
-import ko_KR from "antd/locale/ko_KR";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import AppLayout from "@/components/AppLayout";
 import "./globals.css";
 
@@ -22,11 +21,11 @@ export default function RootLayout({
     <html lang="ko">
       <body className={inter.className} style={{ margin: 0 }}>
         <AntdRegistry>
-          <ConfigProvider locale={ko_KR}>
+          <ThemeProvider>
             <AppLayout>
               {children}
             </AppLayout>
-          </ConfigProvider>
+          </ThemeProvider>
         </AntdRegistry>
       </body>
     </html>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Statistic, Spin, Typography } from 'antd';
+import { Card, Row, Col, Statistic, Spin, Typography, theme } from 'antd';
 import { DollarOutlined, UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import SalesChart from '@/components/SalesChart';
 import { SalesData } from '@/lib/mockGenerator';
@@ -11,6 +11,7 @@ const { Title } = Typography;
 export default function DashboardPage() {
   const [data, setData] = useState<SalesData[]>([]);
   const [loading, setLoading] = useState(true);
+  const { token } = theme.useToken();
 
   useEffect(() => {
     fetch('/api/sales')
@@ -33,13 +34,19 @@ export default function DashboardPage() {
   const totalVisitors = data.reduce((acc, curr) => acc + curr.visitors, 0);
   const totalConversions = data.reduce((acc, curr) => acc + curr.conversions, 0);
 
+  // 다크모드에 맞춰 텍스트 색상 및 보더 색상 조합
+  const cardStyle = {
+    borderColor: token.colorBorderSecondary,
+    background: token.colorBgContainer,
+  };
+
   return (
     <div>
       <Title level={3} style={{ marginBottom: 24 }}>비즈니스 현황 요약</Title>
       
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>
-          <Card variant="borderless" hoverable>
+          <Card hoverable style={cardStyle}>
             <Statistic
               title="누적 매출 (연간)"
               value={totalSales}
@@ -51,7 +58,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card variant="borderless" hoverable>
+          <Card hoverable style={cardStyle}>
             <Statistic
               title="누적 방문자"
               value={totalVisitors}
@@ -63,7 +70,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card variant="borderless" hoverable>
+          <Card hoverable style={cardStyle}>
             <Statistic
               title="누적 전환수"
               value={totalConversions}
@@ -76,7 +83,7 @@ export default function DashboardPage() {
         </Col>
       </Row>
 
-      <Card title="월별 매출 및 트래픽 분석" style={{ marginTop: 24 }}>
+      <Card title="월별 매출 및 트래픽 분석" style={{ marginTop: 24, borderColor: token.colorBorderSecondary }}>
         <SalesChart data={data} />
       </Card>
     </div>

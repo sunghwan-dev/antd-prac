@@ -3,19 +3,23 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SalesData } from '@/lib/mockGenerator';
+import { useAppTheme } from './ThemeProvider';
 
 interface Props {
   data: SalesData[];
 }
 
 const SalesChart: React.FC<Props> = ({ data }) => {
+  const { isDarkMode } = useAppTheme();
+
   const option = {
+    backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
       axisPointer: {
         type: 'cross',
         crossStyle: {
-          color: '#999',
+          color: isDarkMode ? '#888' : '#999',
         },
       },
     },
@@ -29,11 +33,12 @@ const SalesChart: React.FC<Props> = ({ data }) => {
     },
     legend: {
       data: ['매출액', '방문자수', '전환수'],
+      bottom: 0,
     },
     grid: {
       left: '3%',
       right: '4%',
-      bottom: '3%',
+      bottom: 60,
       containLabel: true
     },
     xAxis: [
@@ -94,7 +99,13 @@ const SalesChart: React.FC<Props> = ({ data }) => {
     ],
   };
 
-  return <ReactECharts option={option} style={{ height: '500px', width: '100%' }} />;
+  return (
+    <ReactECharts
+      option={option}
+      style={{ height: '500px', width: '100%' }}
+      theme={isDarkMode ? 'dark' : 'light'}
+    />
+  );
 };
 
 export default SalesChart;
